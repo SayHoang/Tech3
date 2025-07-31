@@ -32,6 +32,9 @@ import ReviewManagement from './pages/admin/ReviewManagement';
 import ReviewList from './pages/ReviewList';
 import ReviewForm from './pages/ReviewForm';
 
+// Chat bot
+import ChatGenAI from './pages/ChatGenAI';
+
 const theme = createTheme({
   palette: {
     primary: { main: '#667eea', light: '#9F7AEA', dark: '#553C9A' },
@@ -77,6 +80,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/" element={<Login />} />
+          <Route path="/chat" element={<ChatGenAI />} />
           {/* Routes with DashboardLayout */}
           <Route element={<DashboardLayout />}>
             <Route path="/home" element={<HomePage />} />
@@ -93,7 +97,7 @@ function App() {
             <Route path="/order-history" element={<OrderHistory />} />
             <Route path="/products/:productId/review" element={<ReviewList />} />
             <Route path="/products/:productId/review/new" element={<ReviewForm />} />
-
+            
             {/* Admin routes */}
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/upload-image" element={<AdminProductImageUpload />} />
