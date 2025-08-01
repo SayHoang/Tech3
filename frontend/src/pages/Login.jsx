@@ -43,9 +43,13 @@ function Login() {
         setIsSuccess(true);
         setErrors({});
 
-        // Show success screen for shorter time then redirect
+        // Show success screen for shorter time then redirect based on role
         setTimeout(() => {
-          navigate("/", { replace: true });
+          if (data.login.data.role === "admin") {
+            navigate("/admin", { replace: true });
+          } else {
+            navigate("/", { replace: true });
+          }
         }, 1500);
       } else {
         setErrors({ general: data.login.message });

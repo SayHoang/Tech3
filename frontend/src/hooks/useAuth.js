@@ -52,13 +52,17 @@ export const useAuth = () => {
   }, []);
 
   const login = (token, username, role) => {
-    localStorage.setItem("token", token);
-    localStorage.setItem("username", username);
-    localStorage.setItem("role", role);
+    // Set state first to avoid multiple re-renders
     setIsAuthenticated(true);
     setUser({ username, role });
 
-    // Dispatch custom event to notify other components
+    // Set localStorage items in batch to minimize storage events
+    localStorage.setItem("token", token);
+    localStorage.setItem("username", username);
+    localStorage.setItem("role", role);
+
+    // Dispatch single custom event to notify other components
+    // (localStorage changes will also trigger, but this ensures immediate update)
     window.dispatchEvent(new CustomEvent("authChange"));
   };
 
