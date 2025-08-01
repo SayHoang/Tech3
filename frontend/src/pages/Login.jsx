@@ -1,12 +1,11 @@
-import { useState } from "react";
-import { useMutation } from "@apollo/client";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth.js";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { LOGIN_MUTATION } from "../graphql/auth.js";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Eye,
   EyeOff,
@@ -20,79 +19,53 @@ import {
 
 function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const location = useLocation();
+  const { login, loginLoading, isAuthenticated, loading } = useAuth();
+
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [error, setError] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const [loginMutation, { loading }] = useMutation(LOGIN_MUTATION, {
-    onCompleted: (data) => {
-      console.log("🔐 Login response:", data);
-      if (data.login.success) {
-        console.log("✅ Login successful!");
-        console.log("👤 User role:", data.login.data.role);
-        console.log("🏷️ Username:", formData.username);
+  // Get the page the user was trying to access
+  const from = location.state?.from?.pathname || "/";
 
-        // Use login function from useAuth to update state
-        login(data.login.data.jwt, formData.username, data.login.data.role);
-
-        setIsSuccess(true);
-        setErrors({});
-
-        // Show success screen for shorter time then redirect based on role
-        setTimeout(() => {
-          if (data.login.data.role === "admin") {
-            navigate("/admin", { replace: true });
-          } else {
-            navigate("/", { replace: true });
-          }
-        }, 1500);
-      } else {
-        setErrors({ general: data.login.message });
-      }
-    },
-    onError: (error) => {
-      setErrors({ general: "Lỗi kết nối. Vui lòng thử lại." });
-      console.error("Login error:", error);
-    },
-  });
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!formData.username.trim()) {
-      newErrors.username = "Tên đăng nhập không được để trống";
-    } else if (formData.username.length < 3) {
-      newErrors.username = "Tên đăng nhập phải có ít nhất 3 ký tự";
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      navigate("/", { replace: true });
     }
+  }, [isAuthenticated, loading, navigate]);
 
-    if (!formData.password) {
-      newErrors.password = "Mật khẩu không được để trống";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
-    if (!validateForm()) return;
+    // Basic validation
+    if (!formData.username.trim() || !formData.password.trim()) {
+      setError("Tên đăng nhập và mật khẩu không được để trống");
+      return;
+    }
 
-    loginMutation({
-      variables: {
-        input: {
-          username: formData.username.trim(),
-          password: formData.password,
-        },
-      },
-    });
+    const result = await login(formData.username.trim(), formData.password);
+
+    if (result.success) {
+      setIsSuccess(true);
+
+      // Show success screen for shorter time then redirect based on role
+      setTimeout(() => {
+        if (result.userRole === "admin") {
+          navigate("/admin", { replace: true });
+        } else {
+          navigate(from, { replace: true });
+        }
+      }, 1500);
+    } else {
+      setError(result.message || "Đăng nhập thất bại");
+    }
   };
 
   const handleInputChange = (field, value) => {
@@ -102,11 +75,8 @@ function Login() {
     }));
 
     // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: "",
-      }));
+    if (error) {
+      setError("");
     }
   };
 
@@ -170,14 +140,12 @@ function Login() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* General Error */}
-              {errors.general && (
-                <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-                  <div className="flex items-center gap-2 text-destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <span className="font-medium">{errors.general}</span>
-                  </div>
-                </div>
+              {/* Error Alert */}
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
               )}
 
               {/* Username Field */}
@@ -194,15 +162,10 @@ function Login() {
                     onChange={(e) =>
                       handleInputChange("username", e.target.value)
                     }
-                    className={`pl-10 ${
-                      errors.username ? "border-destructive" : ""
-                    }`}
-                    disabled={loading}
+                    className="pl-10"
+                    disabled={loginLoading}
                   />
                 </div>
-                {errors.username && (
-                  <p className="text-sm text-destructive">{errors.username}</p>
-                )}
               </div>
 
               {/* Password Field */}
@@ -219,10 +182,8 @@ function Login() {
                     onChange={(e) =>
                       handleInputChange("password", e.target.value)
                     }
-                    className={`pl-10 pr-10 ${
-                      errors.password ? "border-destructive" : ""
-                    }`}
-                    disabled={loading}
+                    className="pl-10 pr-10"
+                    disabled={loginLoading}
                   />
                   <button
                     type="button"
@@ -236,18 +197,25 @@ function Login() {
                     )}
                   </button>
                 </div>
-                {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password}</p>
-                )}
               </div>
 
               {/* Login Button */}
               <Button
                 type="submit"
                 className="w-full bg-primary hover:bg-primary/90"
-                disabled={loading}
+                disabled={loginLoading}
               >
-                {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+                {loginLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></div>
+                    Đang đăng nhập...
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="mr-2 h-4 w-4" />
+                    Đăng nhập
+                  </>
+                )}
               </Button>
             </form>
 

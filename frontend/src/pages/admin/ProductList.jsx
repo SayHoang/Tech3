@@ -54,8 +54,8 @@ function ProductList() {
 
   // Filter and pagination state
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedManufacturer, setSelectedManufacturer] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedManufacturer, setSelectedManufacturer] = useState("all");
   const [sortBy, setSortBy] = useState("NAME_ASC");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
@@ -76,10 +76,10 @@ function ProductList() {
   if (debouncedSearchTerm) {
     filterCondition.name = debouncedSearchTerm;
   }
-  if (selectedCategory) {
+  if (selectedCategory && selectedCategory !== "all") {
     filterCondition.categoryId = selectedCategory;
   }
-  if (selectedManufacturer) {
+  if (selectedManufacturer && selectedManufacturer !== "all") {
     filterCondition.manufacturerId = selectedManufacturer;
   }
 
@@ -112,9 +112,18 @@ function ProductList() {
   const [deleteProduct, { loading: deleteLoading }] = useMutation(
     DELETE_PRODUCT,
     {
-      onCompleted: () => {
-        refetchProducts();
-        alert("Xóa sản phẩm thành công!");
+      update(cache, { data }) {
+        if (data.deleteProduct === 1) {
+          // Successfully deleted, refetch to update the list
+          refetchProducts();
+        }
+      },
+      onCompleted: (data) => {
+        if (data.deleteProduct === 1) {
+          alert("Xóa sản phẩm thành công!");
+        } else {
+          alert("Không tìm thấy sản phẩm để xóa!");
+        }
       },
       onError: (error) => {
         console.error("Delete error:", error);
@@ -135,8 +144,8 @@ function ProductList() {
   // Handle reset filters
   const handleResetFilters = () => {
     setSearchTerm("");
-    setSelectedCategory("");
-    setSelectedManufacturer("");
+    setSelectedCategory("all");
+    setSelectedManufacturer("all");
     setSortBy("NAME_ASC");
     setCurrentPage(1);
   };
@@ -223,7 +232,7 @@ function ProductList() {
                 <SelectValue placeholder="Chọn danh mục" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Tất cả danh mục</SelectItem>
+                <SelectItem value="all">Tất cả danh mục</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category._id} value={category._id}>
                     {category.name}
@@ -241,7 +250,7 @@ function ProductList() {
                 <SelectValue placeholder="Chọn nhà sản xuất" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Tất cả nhà sản xuất</SelectItem>
+                <SelectItem value="all">Tất cả nhà sản xuất</SelectItem>
                 {manufacturers.map((manufacturer) => (
                   <SelectItem key={manufacturer._id} value={manufacturer._id}>
                     {manufacturer.name}

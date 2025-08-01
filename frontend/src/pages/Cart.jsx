@@ -1,13 +1,18 @@
 import React from "react";
-import { useAuth } from "../hooks/useAuth";
 import { useCart } from "../hooks/useCart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Minus, Trash2, ShoppingCart, ArrowRight } from "lucide-react";
+import {
+  Plus,
+  Minus,
+  Trash2,
+  ShoppingCart,
+  ArrowRight,
+  RotateCcw,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 function Cart() {
-  const { isAuthenticated } = useAuth();
   const {
     cart,
     cartItems,
@@ -20,6 +25,7 @@ function Cart() {
     removeFromCart,
     clearCart,
     cartError,
+    refetchCart,
   } = useCart();
 
   // Format currency
@@ -73,9 +79,17 @@ function Cart() {
             <p className="text-gray-600 mb-6">
               Có lỗi xảy ra khi tải giỏ hàng. Vui lòng thử lại!
             </p>
-            <Button onClick={() => window.location.reload()} className="w-full">
-              Tải lại trang
-            </Button>
+            <div className="space-y-3">
+              <Button onClick={() => refetchCart()} className="w-full">
+                <RotateCcw className="mr-2 h-4 w-4" />
+                Tải lại giỏ hàng
+              </Button>
+              <Link to="/products" className="block">
+                <Button variant="outline" className="w-full">
+                  Tiếp tục mua sắm
+                </Button>
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -92,31 +106,6 @@ function Cart() {
             <p className="text-gray-600">Đang tải giỏ hàng...</p>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  // Not authenticated
-  if (!isAuthenticated) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <Card className="max-w-md mx-auto">
-          <CardHeader className="text-center">
-            <ShoppingCart className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <CardTitle>Bạn cần đăng nhập</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-gray-600 mb-6">
-              Vui lòng đăng nhập để xem giỏ hàng của bạn.
-            </p>
-            <Link to="/login">
-              <Button className="w-full">
-                Đăng nhập
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
       </div>
     );
   }

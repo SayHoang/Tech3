@@ -103,8 +103,9 @@ export const resolvers = {
     updateProduct: (parent, args, context, info) => {
       return context.db.products.updateById(args._id, args.input);
     },
-    deleteProduct: (parent, args, context, info) => {
-      return context.db.products.deleteById(args._id);
+    deleteProduct: async (parent, args, context, info) => {
+      const deleted = await context.db.products.deleteById(args._id);
+      return deleted ? 1 : 0;
     },
   },
 };

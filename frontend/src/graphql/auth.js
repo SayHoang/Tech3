@@ -7,7 +7,6 @@ export const LOGIN_MUTATION = gql`
       message
       data {
         jwt
-        role
       }
     }
   }

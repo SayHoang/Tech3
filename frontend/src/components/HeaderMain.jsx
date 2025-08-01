@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { GET_ALL_CATEGORIES } from "../graphql/categories.js";
-import { useAuth } from "../hooks/useAuth.js";
+import { useAuth } from "../context/AuthContext";
 import { useCart } from "../hooks/useCart.js";
 import {
   Search,

@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { useMutation } from "@apollo/client";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { REGISTER_MUTATION } from "../graphql/auth.js";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Eye,
   EyeOff,
@@ -19,6 +19,8 @@ import {
 
 function Register() {
   const navigate = useNavigate();
+  const { register, registerLoading, isAuthenticated, loading } = useAuth();
+
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -29,55 +31,28 @@ function Register() {
   const [errors, setErrors] = useState({});
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const [registerMutation, { loading }] = useMutation(REGISTER_MUTATION, {
-    onCompleted: (data) => {
-      console.log("📝 Register response:", data);
-      if (data.register.success) {
-        console.log("✅ Registration successful for user:", formData.username);
-        console.log("ℹ️ Note: User role will be 'customer' by default");
-        setIsSuccess(true);
-        setErrors({});
-
-        // Redirect to login after 3 seconds
-        setTimeout(() => {
-          navigate("/login", { replace: true });
-        }, 3000);
-      } else {
-        console.log("❌ Registration failed:", data.register.message);
-        setErrors({ general: data.register.message });
-      }
-    },
-    onError: (error) => {
-      console.error("💥 Register network error:", error);
-      setErrors({ general: "Lỗi kết nối. Vui lòng thử lại." });
-    },
-  });
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      navigate("/", { replace: true });
+    }
+  }, [isAuthenticated, loading, navigate]);
 
   const validateForm = () => {
     const newErrors = {};
 
-    // Username validation
     if (!formData.username.trim()) {
       newErrors.username = "Tên đăng nhập không được để trống";
     } else if (formData.username.length < 3) {
       newErrors.username = "Tên đăng nhập phải có ít nhất 3 ký tự";
-    } else if (formData.username.length > 30) {
-      newErrors.username = "Tên đăng nhập không được quá 30 ký tự";
-    } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
-      newErrors.username =
-        "Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới";
     }
 
-    // Password validation
     if (!formData.password) {
       newErrors.password = "Mật khẩu không được để trống";
     } else if (formData.password.length < 6) {
       newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự";
-    } else if (formData.password.length > 50) {
-      newErrors.password = "Mật khẩu không được quá 50 ký tự";
     }
 
-    // Confirm password validation
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = "Vui lòng xác nhận mật khẩu";
     } else if (formData.password !== formData.confirmPassword) {
@@ -88,19 +63,24 @@ function Register() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
-    registerMutation({
-      variables: {
-        input: {
-          username: formData.username.trim(),
-          password: formData.password,
-        },
-      },
-    });
+    const result = await register(formData.username.trim(), formData.password);
+
+    if (result.success) {
+      setIsSuccess(true);
+      setErrors({});
+
+      // Redirect to login after 3 seconds
+      setTimeout(() => {
+        navigate("/login", { replace: true });
+      }, 3000);
+    } else {
+      setErrors({ general: result.message || "Đăng ký thất bại" });
+    }
   };
 
   const handleInputChange = (field, value) => {
@@ -132,11 +112,10 @@ function Register() {
                 Đăng ký thành công!
               </h2>
               <p className="text-muted-foreground mb-4">
-                Tài khoản <strong>{formData.username}</strong> đã được tạo thành
-                công.
+                Tài khoản {formData.username} đã được tạo thành công
               </p>
               <Badge variant="secondary" className="text-sm">
-                Đang chuyển đến trang đăng nhập trong 3 giây...
+                Đang chuyển đến trang đăng nhập...
               </Badge>
             </div>
           </CardContent>
@@ -166,7 +145,7 @@ function Register() {
           </div>
           <h1 className="text-3xl font-bold text-foreground mb-2">Đăng ký</h1>
           <p className="text-muted-foreground">
-            Tạo tài khoản CampFire mới để bắt đầu mua sắm
+            Tạo tài khoản CampFire mới của bạn
           </p>
         </div>
 
@@ -181,12 +160,10 @@ function Register() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* General Error */}
               {errors.general && (
-                <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-                  <div className="flex items-center gap-2 text-destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <span className="font-medium">{errors.general}</span>
-                  </div>
-                </div>
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{errors.general}</AlertDescription>
+                </Alert>
               )}
 
               {/* Username Field */}
@@ -198,7 +175,7 @@ function Register() {
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="text"
-                    placeholder="Nhập tên đăng nhập (3-30 ký tự)"
+                    placeholder="Nhập tên đăng nhập"
                     value={formData.username}
                     onChange={(e) =>
                       handleInputChange("username", e.target.value)
@@ -206,7 +183,7 @@ function Register() {
                     className={`pl-10 ${
                       errors.username ? "border-destructive" : ""
                     }`}
-                    disabled={loading}
+                    disabled={registerLoading}
                   />
                 </div>
                 {errors.username && (
@@ -223,7 +200,7 @@ function Register() {
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     type={showPassword ? "text" : "password"}
-                    placeholder="Nhập mật khẩu (ít nhất 6 ký tự)"
+                    placeholder="Nhập mật khẩu"
                     value={formData.password}
                     onChange={(e) =>
                       handleInputChange("password", e.target.value)
@@ -231,7 +208,7 @@ function Register() {
                     className={`pl-10 pr-10 ${
                       errors.password ? "border-destructive" : ""
                     }`}
-                    disabled={loading}
+                    disabled={registerLoading}
                   />
                   <button
                     type="button"
@@ -267,7 +244,7 @@ function Register() {
                     className={`pl-10 pr-10 ${
                       errors.confirmPassword ? "border-destructive" : ""
                     }`}
-                    disabled={loading}
+                    disabled={registerLoading}
                   />
                   <button
                     type="button"
@@ -292,9 +269,19 @@ function Register() {
               <Button
                 type="submit"
                 className="w-full bg-primary hover:bg-primary/90"
-                disabled={loading}
+                disabled={registerLoading}
               >
-                {loading ? "Đang đăng ký..." : "Đăng ký"}
+                {registerLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></div>
+                    Đang đăng ký...
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Đăng ký
+                  </>
+                )}
               </Button>
             </form>
 

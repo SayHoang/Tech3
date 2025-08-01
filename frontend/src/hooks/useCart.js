@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useApolloClient } from "@apollo/client";
-import { useAuth } from "./useAuth.js";
+import { useAuth } from "../context/AuthContext";
 import {
   GET_CART,
   GET_CART_ITEM_COUNT,
@@ -23,11 +23,6 @@ export const useCart = () => {
     refetch: refetchCart,
   } = useQuery(GET_CART, {
     skip: !isAuthenticated,
-    context: {
-      headers: {
-        authorization: isAuthenticated ? `Bearer ${getToken()}` : "",
-      },
-    },
     errorPolicy: "all",
   });
 
@@ -37,12 +32,6 @@ export const useCart = () => {
     loading: cartCountLoading,
     refetch: refetchCartCount,
   } = useQuery(GET_CART_ITEM_COUNT, {
-    skip: !isAuthenticated,
-    context: {
-      headers: {
-        authorization: isAuthenticated ? `Bearer ${getToken()}` : "",
-      },
-    },
     errorPolicy: "all",
   });
 
@@ -50,11 +39,6 @@ export const useCart = () => {
   const [addToCartMutation, { loading: addingToCart }] = useMutation(
     ADD_TO_CART,
     {
-      context: {
-        headers: {
-          authorization: isAuthenticated ? `Bearer ${getToken()}` : "",
-        },
-      },
       update: (cache, { data }) => {
         // Optimistically update Apollo cache
         try {
@@ -95,11 +79,6 @@ export const useCart = () => {
   const [updateQuantityMutation, { loading: updatingQuantity }] = useMutation(
     UPDATE_CART_ITEM_QUANTITY,
     {
-      context: {
-        headers: {
-          authorization: isAuthenticated ? `Bearer ${getToken()}` : "",
-        },
-      },
       update: (cache, { data }) => {
         // Optimistically update Apollo cache
         try {
@@ -140,11 +119,6 @@ export const useCart = () => {
   const [removeFromCartMutation, { loading: removingFromCart }] = useMutation(
     REMOVE_FROM_CART,
     {
-      context: {
-        headers: {
-          authorization: isAuthenticated ? `Bearer ${getToken()}` : "",
-        },
-      },
       update: (cache, { data }) => {
         // Optimistically update Apollo cache
         try {
@@ -199,11 +173,6 @@ export const useCart = () => {
   const [clearCartMutation, { loading: clearingCart }] = useMutation(
     CLEAR_CART,
     {
-      context: {
-        headers: {
-          authorization: isAuthenticated ? `Bearer ${getToken()}` : "",
-        },
-      },
       update: (cache, { data }) => {
         // Optimistically update Apollo cache
         try {

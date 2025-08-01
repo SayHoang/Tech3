@@ -2,8 +2,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
+import { fileURLToPath } from "url";
+import { dirname, resolve } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -13,7 +13,6 @@ dotenv.config({ path: resolve(__dirname, "../.env") });
 export const typeDef = `
     type LoginResult {
         jwt: String!
-        role: String!
     }
 
     type LoginResponse {
@@ -70,7 +69,7 @@ export const resolvers = {
             username: user.username,
             role: user.role,
           },
-          process.env.JWT_SECRET,
+          process.env.JWT_SECRET || "your_secret_key",
           {
             expiresIn: "24h",
           }
@@ -81,7 +80,6 @@ export const resolvers = {
           message: "Login successfully",
           data: {
             jwt: token,
-            role: user.role,
           },
         };
       }

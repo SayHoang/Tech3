@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCart } from "../hooks/useCart.js";
-import { useAuth } from "../hooks/useAuth.js";
+import { useAuth } from "../context/AuthContext.jsx";
 import {
   ShoppingCart,
   Plus,

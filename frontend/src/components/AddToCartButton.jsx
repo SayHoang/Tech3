@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "../hooks/useCart.js";
-import { useAuth } from "../hooks/useAuth.js";
+import { useAuth } from "../context/AuthContext.jsx";
 import { ShoppingCart, Plus, Minus, Check, Loader2 } from "lucide-react";
 
 function AddToCartButton({

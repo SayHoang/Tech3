@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, Outlet } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useAuth } from "../hooks/useAuth.js";
+import { useAuth } from "../context/AuthContext.jsx";
 import {
   LayoutDashboard,
   Package,

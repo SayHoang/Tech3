@@ -63,17 +63,20 @@ export const resolvers = {
           throw new Error("Người dùng không tồn tại");
         }
 
-        const cart = await context.db.carts.findByUserId(user._id);
-        return (
-          cart || {
-            _id: null,
+        let cart = await context.db.carts.findByUserId(user._id);
+
+        // If user doesn't have a cart, create one
+        if (!cart) {
+          cart = await context.db.carts.create({
             userId: user._id,
             items: [],
             totalItems: 0,
             totalPrice: 0,
             lastUpdated: new Date(),
-          }
-        );
+          });
+        }
+
+        return cart;
       } catch (error) {
         throw new Error("Token không hợp lệ");
       }
@@ -158,21 +161,24 @@ export const resolvers = {
           throw new Error("Người dùng không tồn tại");
         }
 
-        const cart = await context.db.carts.updateItemQuantity(
+        let cart = await context.db.carts.updateItemQuantity(
           user._id,
           productId,
           quantity
         );
-        return (
-          cart || {
-            _id: null,
+
+        // If cart doesn't exist, create one (edge case)
+        if (!cart) {
+          cart = await context.db.carts.create({
             userId: user._id,
             items: [],
             totalItems: 0,
             totalPrice: 0,
             lastUpdated: new Date(),
-          }
-        );
+          });
+        }
+
+        return cart;
       } catch (error) {
         if (error.message.includes("Token") || error.message.includes("jwt")) {
           throw new Error("Token không hợp lệ");
@@ -196,18 +202,20 @@ export const resolvers = {
           throw new Error("Người dùng không tồn tại");
         }
 
-        const cart = await context.db.carts.removeItem(user._id, productId);
+        let cart = await context.db.carts.removeItem(user._id, productId);
 
-        return (
-          cart || {
-            _id: null,
+        // If cart doesn't exist, create one (edge case)
+        if (!cart) {
+          cart = await context.db.carts.create({
             userId: user._id,
             items: [],
             totalItems: 0,
             totalPrice: 0,
             lastUpdated: new Date(),
-          }
-        );
+          });
+        }
+
+        return cart;
       } catch (error) {
         if (error.message.includes("Token") || error.message.includes("jwt")) {
           throw new Error("Token không hợp lệ");
@@ -231,17 +239,20 @@ export const resolvers = {
           throw new Error("Người dùng không tồn tại");
         }
 
-        const cart = await context.db.carts.clearCart(user._id);
-        return (
-          cart || {
-            _id: null,
+        let cart = await context.db.carts.clearCart(user._id);
+
+        // If cart doesn't exist, create one (edge case)
+        if (!cart) {
+          cart = await context.db.carts.create({
             userId: user._id,
             items: [],
             totalItems: 0,
             totalPrice: 0,
             lastUpdated: new Date(),
-          }
-        );
+          });
+        }
+
+        return cart;
       } catch (error) {
         if (error.message.includes("Token") || error.message.includes("jwt")) {
           throw new Error("Token không hợp lệ");
