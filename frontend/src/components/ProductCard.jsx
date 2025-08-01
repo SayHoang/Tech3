@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, ShoppingCart, Heart, Eye, Package } from "lucide-react";
+import { Star, Heart, Eye, Package } from "lucide-react";
+import AddToCartButton from "./AddToCartButton.jsx";
 
 function ProductCard({ product, viewMode = "grid" }) {
   const { _id, name, price, imageUrl, categoryName, manufacturerName } =
@@ -211,13 +212,17 @@ function ProductCard({ product, viewMode = "grid" }) {
         </div>
 
         {/* Add to Cart Button */}
-        <Button
-          className="w-full bg-primary hover:bg-primary/90"
-          disabled={!isInStock}
-        >
-          <ShoppingCart className="h-4 w-4 mr-2" />
-          {isInStock ? "Thêm vào giỏ" : "Hết hàng"}
-        </Button>
+        {isInStock ? (
+          <AddToCartButton
+            product={product}
+            className="w-full bg-primary hover:bg-primary/90"
+          />
+        ) : (
+          <Button className="w-full bg-muted text-muted-foreground" disabled>
+            <Package className="h-4 w-4 mr-2" />
+            Hết hàng
+          </Button>
+        )}
       </div>
     </div>
   );

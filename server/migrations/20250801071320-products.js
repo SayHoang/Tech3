@@ -362,12 +362,6 @@ export default {
         manufacturerName: "5.11 Tactical",
       },
       {
-        name: "SOG PowerAccess Deluxe",
-        price: 1800000,
-        categoryName: "Pliers",
-        manufacturerName: "SOG",
-      },
-      {
         name: "Magpul Technical Gloves",
         price: 650000,
         categoryName: "Pliers",
@@ -461,7 +455,7 @@ export default {
       "Leatherman Wave Plus",
       "Leatherman MUT EOD",
       "Gerber Center-Drive",
-      // Add all product names here for complete rollback
+      "SOG PowerAccess Deluxe",
     ];
 
     await db.collection("products").deleteMany({

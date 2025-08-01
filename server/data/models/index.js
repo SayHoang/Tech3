@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
 
 import { CategorySchema } from "./category.js";
-import { ProductSchema } from "./product.js";   
+import { ProductSchema } from "./product.js";
 import { ManufacturerSchema } from "./manufacturer.js";
 import { DetailSchema } from "./detail.js";
 import { OrderSchema } from "./order.js";
 import { UserSchema } from "./user.js";
 import { ReviewSchema } from "./review.js";
+import { CartSchema } from "./cart.js";
 
 export const Category = mongoose.model("category", CategorySchema);
 export const Product = mongoose.model("product", ProductSchema);
@@ -15,3 +16,4 @@ export const Detail = mongoose.model("detail", DetailSchema);
 export const Order = mongoose.model("order", OrderSchema);
 export const User = mongoose.model("user", UserSchema);
 export const Review = mongoose.model("review", ReviewSchema);
+export const Cart = mongoose.model("cart", CartSchema);

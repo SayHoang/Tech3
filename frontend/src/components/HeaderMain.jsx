@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { GET_ALL_CATEGORIES } from "../graphql/categories.js";
 import { useAuth } from "../hooks/useAuth.js";
+import { useCart } from "../hooks/useCart.js";
 import {
   Search,
   ShoppingCart,
@@ -39,15 +40,10 @@ const getCategoryIcon = (categoryName) => {
 
 function HeaderMain() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
-
-  // Debug authentication state
-  console.log("🔧 HeaderMain render - Auth state:");
-  console.log("🔒 Is authenticated:", isAuthenticated);
-  console.log("👤 User object:", user);
+  const { cartItemCount } = useCart();
 
   // Fetch categories for navigation
   const { data: categoriesData, loading: categoriesLoading } = useQuery(
@@ -124,17 +120,24 @@ function HeaderMain() {
               <Heart className="h-5 w-5" />
             </Button>
 
-            <Button variant="ghost" size="icon" className="relative">
-              <ShoppingCart className="h-5 w-5" />
-              {cartCount > 0 && (
-                <Badge
-                  variant="destructive"
-                  className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
-                >
-                  {cartCount}
-                </Badge>
-              )}
-            </Button>
+            <Link to="/cart">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative"
+                title="Giỏ hàng"
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {cartItemCount > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                  >
+                    {cartItemCount}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
 
             {/* Authentication Buttons */}
             {isAuthenticated ? (

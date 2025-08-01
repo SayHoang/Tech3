@@ -5,6 +5,7 @@ import { Detail } from "./models/index.js";
 import { Order } from "./models/index.js";
 import { User } from "./models/index.js";
 import { Review } from "./models/index.js";
+import { Cart } from "./models/index.js";
 import mongoose from "mongoose";
 
 const values = {
@@ -334,6 +335,99 @@ const db = {
     },
     insertOne: async (user) => {
       return await User.create(user);
+    },
+  },
+
+  // carts
+  carts: {
+    findByUserId: async (userId) => {
+      return await Cart.findOne({
+        userId: new mongoose.Types.ObjectId(userId),
+      }).lean();
+    },
+    create: async (cartData) => {
+      return await Cart.create(cartData);
+    },
+    addItem: async (userId, item) => {
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+      const productObjectId = new mongoose.Types.ObjectId(item.productId);
+
+      // Find existing cart or create new one
+      let cart = await Cart.findOne({ userId: userObjectId });
+
+      if (!cart) {
+        cart = new Cart({
+          userId: userObjectId,
+          items: [],
+        });
+      }
+
+      // Check if item already exists in cart
+      const existingItemIndex = cart.items.findIndex(
+        (cartItem) =>
+          cartItem.productId.toString() === productObjectId.toString()
+      );
+
+      if (existingItemIndex > -1) {
+        // Update quantity if item exists
+        cart.items[existingItemIndex].quantity += item.quantity;
+      } else {
+        // Add new item
+        cart.items.push({
+          productId: productObjectId,
+          productName: item.productName,
+          productPrice: item.productPrice,
+          productImageUrl: item.productImageUrl,
+          quantity: item.quantity,
+        });
+      }
+
+      return await cart.save();
+    },
+    updateItemQuantity: async (userId, productId, quantity) => {
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+      const productObjectId = new mongoose.Types.ObjectId(productId);
+
+      if (quantity <= 0) {
+        // Remove item if quantity is 0 or negative
+        return await Cart.findOneAndUpdate(
+          { userId: userObjectId },
+          { $pull: { items: { productId: productObjectId } } },
+          { new: true }
+        );
+      } else {
+        // Update quantity
+        return await Cart.findOneAndUpdate(
+          {
+            userId: userObjectId,
+            "items.productId": productObjectId,
+          },
+          { $set: { "items.$.quantity": quantity } },
+          { new: true }
+        );
+      }
+    },
+    removeItem: async (userId, productId) => {
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+      const productObjectId = new mongoose.Types.ObjectId(productId);
+
+      return await Cart.findOneAndUpdate(
+        { userId: userObjectId },
+        { $pull: { items: { productId: productObjectId } } },
+        { new: true }
+      );
+    },
+    clearCart: async (userId) => {
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+      return await Cart.findOneAndUpdate(
+        { userId: userObjectId },
+        { $set: { items: [] } },
+        { new: true }
+      );
+    },
+    deleteCart: async (userId) => {
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+      return await Cart.findOneAndDelete({ userId: userObjectId });
     },
   },
 };

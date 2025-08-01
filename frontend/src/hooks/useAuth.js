@@ -12,13 +12,7 @@ export const useAuth = () => {
       const username = localStorage.getItem("username");
       const role = localStorage.getItem("role");
 
-      console.log("🔍 useAuth - Checking stored auth data:");
-      console.log("🎫 Token:", token ? "EXISTS" : "NOT_FOUND");
-      console.log("👤 Username:", username);
-      console.log("🎭 Role:", role);
-
       if (token && username && role) {
-        console.log("✅ User authenticated:", { username, role });
         setIsAuthenticated(true);
         setUser({ username, role });
       } else {
@@ -27,6 +21,8 @@ export const useAuth = () => {
         setUser(null);
       }
       setLoading(false);
+
+      console.log("✅ User authenticated:", { username, role });
     };
 
     // Check auth on component mount
@@ -56,10 +52,6 @@ export const useAuth = () => {
   }, []);
 
   const login = (token, username, role) => {
-    console.log("🚀 useAuth - Login function called:");
-    console.log("👤 Username:", username);
-    console.log("🎭 Role:", role);
-
     localStorage.setItem("token", token);
     localStorage.setItem("username", username);
     localStorage.setItem("role", role);
@@ -71,7 +63,6 @@ export const useAuth = () => {
   };
 
   const logout = () => {
-    console.log("🚪 useAuth - Logout function called");
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     localStorage.removeItem("role");

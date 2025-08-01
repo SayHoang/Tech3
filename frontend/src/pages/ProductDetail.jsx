@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { useParams, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   GET_PRODUCT_BY_ID,
   GET_PRODUCTS_BY_CATEGORY,
@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import ProductCard from "../components/ProductCard.jsx";
+import AddToCartButton from "../components/AddToCartButton.jsx";
 import {
   Star,
   ShoppingCart,
@@ -69,6 +70,16 @@ function ProductDetail() {
 
   const mockSizes = ["S", "M", "L", "XL"];
   const mockColors = ["Đen", "Xám", "Xanh lá", "Cam"];
+
+  // Set default values when component mounts or product changes
+  useEffect(() => {
+    if (mockSizes.length > 0 && !selectedSize) {
+      setSelectedSize(mockSizes[1]); // Default to "M"
+    }
+    if (mockColors.length > 0 && !selectedColor) {
+      setSelectedColor(mockColors[0]); // Default to "Đen"
+    }
+  }, [product, selectedSize, selectedColor]);
   const mockSpecs = {
     dimensions: "25 x 15 x 8 cm",
     material: "Cordura 1000D",
@@ -407,14 +418,26 @@ function ProductDetail() {
 
               {/* Add to Cart */}
               <div className="flex gap-4">
-                <Button
-                  size="lg"
-                  className="flex-1 bg-primary hover:bg-primary/90"
-                  disabled={!isInStock}
-                >
-                  <ShoppingCart className="h-5 w-5 mr-2" />
-                  Thêm vào giỏ hàng
-                </Button>
+                {isInStock ? (
+                  <AddToCartButton
+                    product={product}
+                    quantity={quantity}
+                    selectedSize={selectedSize}
+                    selectedColor={selectedColor}
+                    size="lg"
+                    className="flex-1 bg-primary hover:bg-primary/90"
+                    onQuantityChange={setQuantity}
+                  />
+                ) : (
+                  <Button
+                    size="lg"
+                    className="flex-1 bg-muted text-muted-foreground"
+                    disabled
+                  >
+                    <Package className="h-5 w-5 mr-2" />
+                    Hết hàng
+                  </Button>
+                )}
                 <Button size="lg" variant="outline">
                   Mua ngay
                 </Button>

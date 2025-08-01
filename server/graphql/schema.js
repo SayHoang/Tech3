@@ -5,16 +5,29 @@ import _ from "lodash";
 import { typeDef as hello, resolvers as helloResolvers } from "./hello.js";
 
 // shop
-import { typeDef as categories, resolvers as categoriesResolvers } from "./categories.js";
-import { typeDef as products, resolvers as productsResolvers } from "./products.js";
-import { typeDef as manufacturers, resolvers as manufacturersResolvers } from "./manufacturer.js";
+import {
+  typeDef as categories,
+  resolvers as categoriesResolvers,
+} from "./categories.js";
+import {
+  typeDef as products,
+  resolvers as productsResolvers,
+} from "./products.js";
+import {
+  typeDef as manufacturers,
+  resolvers as manufacturersResolvers,
+} from "./manufacturer.js";
 import { typeDef as details, resolvers as detailsResolvers } from "./detail.js";
 import { typeDef as reviews, resolvers as reviewsResolvers } from "./review.js";
+import { typeDef as cart, resolvers as cartResolvers } from "./cart.js";
 
 // orders (Admin)
 import { typeDef as orders, resolvers as ordersResolvers } from "./orders.js";
 import { typeDef as upload, resolvers as uploadResolvers } from "./upload.js";
-import { typeDef as authentication, resolvers as authenticationResolvers } from "./authentication.js";
+import {
+  typeDef as authentication,
+  resolvers as authenticationResolvers,
+} from "./authentication.js";
 
 const query = `
   scalar DateTime
@@ -91,9 +104,10 @@ const typeDefs = [
   manufacturers,
   details,
   reviews,
-  orders,          
+  orders,
   upload,
-  authentication
+  authentication,
+  cart,
 ];
 
 const resolvers = _.merge(
@@ -103,9 +117,10 @@ const resolvers = _.merge(
   manufacturersResolvers,
   detailsResolvers,
   reviewsResolvers,
-  ordersResolvers, 
+  ordersResolvers,
   uploadResolvers,
-  authenticationResolvers
+  authenticationResolvers,
+  cartResolvers
 );
 
 export const schema = createSchema({
