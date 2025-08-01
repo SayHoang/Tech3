@@ -333,7 +333,7 @@ const db = {
       return await User.findOne({ username }).lean();
     },
     insertOne: async (user) => {
-      return await User.insertOne(user);
+      return await User.create(user);
     },
   },
 };

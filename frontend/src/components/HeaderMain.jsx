@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { GET_ALL_CATEGORIES } from "../graphql/categories.js";
+import { useAuth } from "../hooks/useAuth.js";
 import {
   Search,
   ShoppingCart,
@@ -19,6 +20,8 @@ import {
   Package,
   Grid3X3,
   Settings,
+  LogOut,
+  LogIn,
 } from "lucide-react";
 
 // Map category names to icons
@@ -38,6 +41,13 @@ function HeaderMain() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
+
+  // Debug authentication state
+  console.log("🔧 HeaderMain render - Auth state:");
+  console.log("🔒 Is authenticated:", isAuthenticated);
+  console.log("👤 User object:", user);
 
   // Fetch categories for navigation
   const { data: categoriesData, loading: categoriesLoading } = useQuery(
@@ -126,9 +136,54 @@ function HeaderMain() {
               )}
             </Button>
 
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-            </Button>
+            {/* Authentication Buttons */}
+            {isAuthenticated ? (
+              <div className="flex items-center gap-2">
+                <div className="hidden md:flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg">
+                  <User className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium text-foreground">
+                    {user?.username}
+                  </span>
+                  {user?.role === "admin" && (
+                    <Badge variant="secondary" className="text-xs">
+                      Admin
+                    </Badge>
+                  )}
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    logout();
+                    navigate("/");
+                  }}
+                  title="Đăng xuất"
+                >
+                  <LogOut className="h-5 w-5" />
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate("/login")}
+                  className="hidden md:flex"
+                >
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Đăng nhập
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate("/login")}
+                  className="md:hidden"
+                  title="Đăng nhập"
+                >
+                  <LogIn className="h-5 w-5" />
+                </Button>
+              </div>
+            )}
 
             {/* Mobile Menu Button */}
             <Button

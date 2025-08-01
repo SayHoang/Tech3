@@ -11,6 +11,8 @@ import Categories from "./pages/Categories";
 import Category from "./pages/Category";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import NoPage from "./pages/NoPage";
 
 function App() {
@@ -25,6 +27,8 @@ function App() {
             <Route path="/category/:id" element={<Category />} />
             <Route path="/products" element={<Products />} />
             <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route path="*" element={<NoPage />} />
           </Routes>
         </main>

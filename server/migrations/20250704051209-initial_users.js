@@ -2,15 +2,21 @@ import bcrypt from "bcrypt";
 
 export const up = async (db, client) => {
   await db.collection("users").insertMany([
-    { username: "admin", password: bcrypt.hashSync("1234", 10), role: "admin" },
-    { username: "john", password: bcrypt.hashSync("1234", 10), role: "manager" },
-    { username: "jack", password: bcrypt.hashSync("1234", 10), role: "manager" },
+    {
+      username: "admin",
+      password: bcrypt.hashSync("123123", 10),
+      role: "admin",
+    },
     {
       username: "alice",
-      password: bcrypt.hashSync("1234", 10),
+      password: bcrypt.hashSync("123123", 10),
       role: "customer",
     },
-    { username: "bob", password: bcrypt.hashSync("1234", 10), role: "customer" },
+    {
+      username: "bob",
+      password: bcrypt.hashSync("123123", 10),
+      role: "customer",
+    },
   ]);
 };
 
