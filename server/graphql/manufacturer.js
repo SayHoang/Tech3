@@ -8,8 +8,24 @@ export const typeDef = `
         name: String!
     }
 
+    enum ManufacturersOrderBy {
+        ID_ASC
+        ID_DESC
+        NAME_ASC
+        NAME_DESC
+    }
+
+    type ManufacturerConnection {
+        nodes: [Manufacturer]
+        totalCount: Int
+    }
+
     extend type Query {
-        manufacturers: [Manufacturer]
+        manufacturers(
+            first: Int
+            offset: Int
+            orderBy: [ManufacturersOrderBy!] = ID_ASC
+        ): ManufacturerConnection
         manufacturer(_id: ID!): Manufacturer
     }
 
@@ -21,23 +37,27 @@ export const typeDef = `
 `;
 
 export const resolvers = {
-    Query: {
-        manufacturers: (parent, args, context, info) => {
-            return context.db.manufacturers.getAll();
-        },
-        manufacturer: (parent, args, context, info) => {
-            return context.db.manufacturers.findById(args._id);
-        },
+  Query: {
+    manufacturers: async (parent, args, context, info) => {
+      const { items, totalCount } = await context.db.manufacturers.getAll(args);
+      return {
+        nodes: items,
+        totalCount: totalCount,
+      };
     },
-    Mutation: {
-        createManufacturer: (parent, args, context, info) => {
-            return context.db.manufacturers.create(args.input);
-        },
-        updateManufacturer: (parent, args, context, info) => {
-            return context.db.manufacturers.updateById(args._id, args.input);
-        },
-        deleteManufacturer: (parent, args, context, info) => {
-            return context.db.manufacturers.deleteById(args._id);
-        },
+    manufacturer: (parent, args, context, info) => {
+      return context.db.manufacturers.findById(args._id);
     },
+  },
+  Mutation: {
+    createManufacturer: (parent, args, context, info) => {
+      return context.db.manufacturers.create(args.input);
+    },
+    updateManufacturer: (parent, args, context, info) => {
+      return context.db.manufacturers.updateById(args._id, args.input);
+    },
+    deleteManufacturer: (parent, args, context, info) => {
+      return context.db.manufacturers.deleteById(args._id);
+    },
+  },
 };

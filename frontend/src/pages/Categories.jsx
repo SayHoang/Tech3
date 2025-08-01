@@ -49,9 +49,9 @@ function Categories() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-secondary">
+      <div className="min-h-screen bg-background">
         {/* Hero Section Skeleton */}
-        <div className="bg-secondary py-20">
+        <div className="bg-background py-20">
           <div className="container mx-auto px-4">
             <div className="text-center space-y-4">
               <div className="h-12 bg-gray-700 rounded w-96 mx-auto animate-pulse"></div>
@@ -100,15 +100,15 @@ function Categories() {
   }
 
   return (
-    <div className="min-h-screen bg-secondary">
-      {/* Hero Section - Style chuyentactical với nền đen */}
-      <section className="bg-secondary text-secondary-foreground py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-secondary via-secondary/95 to-secondary/90"></div>
+    <div className="min-h-screen bg-background">
+      {/* Hero Section - Style chuyentactical với nền trắng */}
+      <section className="bg-background text-foreground py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-muted/30"></div>
         <div className="relative container mx-auto px-4">
           <div className="text-center max-w-4xl mx-auto">
             <div className="flex items-center justify-center mb-6">
               <Grid3X3 className="h-12 w-12 text-primary mr-4" />
-              <h1 className="text-5xl font-bold text-secondary-foreground">
+              <h1 className="text-5xl font-bold text-foreground">
                 DANH MỤC SẢN PHẨM
               </h1>
             </div>

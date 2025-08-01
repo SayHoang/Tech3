@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { GET_ALL_PRODUCTS } from "../graphql/products.js";
 import { GET_ALL_CATEGORIES } from "../graphql/categories.js";
 import { GET_ALL_MANUFACTURERS } from "../graphql/manufacturers.js";
@@ -24,6 +24,7 @@ import {
 
 function Products() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedManufacturer, setSelectedManufacturer] = useState("");
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
@@ -32,28 +33,50 @@ function Products() {
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12;
 
+  // Debounce search term to avoid too many API calls
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   // Fetch data
   const { data: categoriesData } = useQuery(GET_ALL_CATEGORIES);
   const { data: manufacturersData } = useQuery(GET_ALL_MANUFACTURERS);
 
-  const { data, loading, error } = useQuery(GET_ALL_PRODUCTS, {
-    variables: {
-      first: 20, // Get more products for pagination
+  // Memoize the query variables to prevent unnecessary re-renders
+  const queryVariables = useMemo(() => {
+    const condition = {};
+
+    if (debouncedSearchTerm) condition.name = debouncedSearchTerm;
+    if (selectedCategory) condition.categoryId = selectedCategory;
+    if (selectedManufacturer) condition.manufacturerId = selectedManufacturer;
+
+    if (priceRange.min || priceRange.max) {
+      condition.price = {};
+      if (priceRange.min) condition.price.min = parseFloat(priceRange.min);
+      if (priceRange.max) condition.price.max = parseFloat(priceRange.max);
+    }
+
+    return {
+      first: 100, // Get more products for pagination
       offset: 0,
-      condition: {
-        name: searchTerm || undefined,
-        categoryId: selectedCategory || undefined,
-        manufacturerId: selectedManufacturer || undefined,
-        price:
-          priceRange.min || priceRange.max
-            ? {
-                min: priceRange.min ? parseFloat(priceRange.min) : undefined,
-                max: priceRange.max ? parseFloat(priceRange.max) : undefined,
-              }
-            : undefined,
-      },
+      condition: Object.keys(condition).length > 0 ? condition : undefined,
       orderBy: [sortBy],
-    },
+    };
+  }, [
+    debouncedSearchTerm,
+    selectedCategory,
+    selectedManufacturer,
+    priceRange.min,
+    priceRange.max,
+    sortBy,
+  ]);
+
+  const { data, loading, error } = useQuery(GET_ALL_PRODUCTS, {
+    variables: queryVariables,
   });
 
   const categories = categoriesData?.categories?.nodes || [];
@@ -68,6 +91,7 @@ function Products() {
 
   const clearFilters = () => {
     setSearchTerm("");
+    setDebouncedSearchTerm("");
     setSelectedCategory("");
     setSelectedManufacturer("");
     setPriceRange({ min: "", max: "" });
@@ -135,12 +159,12 @@ function Products() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section - ChuyenTactical Style */}
-      <section className="bg-secondary text-secondary-foreground py-16">
+      <section className="bg-background text-foreground py-16">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-4xl mx-auto">
             <div className="flex items-center justify-center mb-6">
               <Package className="h-12 w-12 text-primary mr-4" />
-              <h1 className="text-5xl font-bold text-secondary-foreground">
+              <h1 className="text-5xl font-bold text-foreground">
                 TẤT CẢ SẢN PHẨM
               </h1>
             </div>
@@ -159,9 +183,7 @@ function Products() {
                 Trang chủ
               </Link>
               <span className="mx-2">/</span>
-              <span className="text-secondary-foreground font-medium">
-                Sản phẩm
-              </span>
+              <span className="text-foreground font-medium">Sản phẩm</span>
             </nav>
           </div>
         </div>
@@ -294,18 +316,21 @@ function Products() {
               </div>
 
               {/* Active Filters */}
-              {(searchTerm ||
+              {(debouncedSearchTerm ||
                 selectedCategory ||
                 selectedManufacturer ||
                 priceRange.min ||
                 priceRange.max) && (
                 <div className="flex flex-wrap gap-2 pt-4 border-t border-muted">
-                  {searchTerm && (
+                  {debouncedSearchTerm && (
                     <Badge variant="secondary" className="gap-1">
-                      Tìm kiếm: "{searchTerm}"
+                      Tìm kiếm: "{debouncedSearchTerm}"
                       <X
                         className="h-3 w-3 cursor-pointer"
-                        onClick={() => setSearchTerm("")}
+                        onClick={() => {
+                          setSearchTerm("");
+                          setDebouncedSearchTerm("");
+                        }}
                       />
                     </Badge>
                   )}

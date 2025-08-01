@@ -50,9 +50,9 @@ function Category() {
 
   if (categoryLoading || productsLoading) {
     return (
-      <div className="min-h-screen bg-secondary">
+      <div className="min-h-screen bg-background">
         {/* Hero Section Skeleton */}
-        <div className="bg-secondary py-16">
+        <div className="bg-background py-16">
           <div className="container mx-auto px-4">
             <div className="h-8 w-32 bg-gray-700 rounded mb-4 animate-pulse"></div>
             <div className="h-12 w-64 bg-gray-700 rounded mb-2 animate-pulse"></div>
@@ -82,7 +82,7 @@ function Category() {
 
   if (categoryError || productsError) {
     return (
-      <div className="min-h-screen bg-secondary flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="border-destructive bg-card max-w-md mx-4">
           <CardContent className="pt-6">
             <div className="text-center text-destructive">
@@ -131,7 +131,7 @@ function Category() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section - Style chuyentactical */}
-      <section className="bg-secondary text-secondary-foreground py-16">
+      <section className="bg-background text-foreground py-16">
         <div className="container mx-auto px-4">
           {/* Breadcrumb */}
           <nav className="mb-6">
@@ -147,7 +147,7 @@ function Category() {
                 Danh mục
               </Link>
               <span>/</span>
-              <span className="text-secondary-foreground font-medium">
+              <span className="text-foreground font-medium">
                 {category?.name}
               </span>
             </div>
@@ -156,7 +156,7 @@ function Category() {
           <Button
             asChild
             variant="ghost"
-            className="mb-6 -ml-4 text-muted-foreground hover:text-secondary-foreground"
+            className="mb-6 -ml-4 text-muted-foreground hover:text-foreground"
           >
             <Link to="/categories">
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -166,7 +166,7 @@ function Category() {
 
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-secondary-foreground mb-2">
+              <h1 className="text-4xl font-bold text-foreground mb-2">
                 {category?.name?.toUpperCase()}
               </h1>
               <p className="text-muted-foreground text-lg">

@@ -44,9 +44,9 @@ function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section - Style chuyentactical với nền đen */}
-      <section className="bg-secondary text-secondary-foreground relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-secondary via-secondary/98 to-secondary/95"></div>
+      {/* Hero Section - Style chuyentactical với nền trắng */}
+      <section className="bg-background text-foreground relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background/98 to-muted/50"></div>
 
         {/* Pattern Overlay */}
         <div className="absolute inset-0 opacity-10">
@@ -65,7 +65,7 @@ function HomePage() {
                 </Badge>
 
                 <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
-                  <span className="text-secondary-foreground">CAMPFIRE</span>
+                  <span className="text-foreground">CAMPFIRE</span>
                   <br />
                   <span className="text-primary">OUTDOOR</span>
                 </h1>
@@ -137,7 +137,7 @@ function HomePage() {
 
             {/* Right Content - Featured Categories */}
             <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-secondary-foreground mb-6">
+              <h3 className="text-2xl font-bold text-foreground mb-6">
                 DANH MỤC NỔI BẬT
               </h3>
               <div className="grid gap-4">
@@ -148,8 +148,8 @@ function HomePage() {
                       <Card className="group bg-card border-2 border-muted hover:border-primary/50 transition-all duration-300 cursor-pointer">
                         <CardContent className="p-6">
                           <div className="flex items-center gap-4">
-                            <div className="w-16 h-16 bg-secondary rounded-lg flex items-center justify-center group-hover:bg-primary transition-colors">
-                              <IconComponent className="h-8 w-8 text-secondary-foreground group-hover:text-primary-foreground transition-colors" />
+                            <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center group-hover:bg-primary transition-colors">
+                              <IconComponent className="h-8 w-8 text-foreground group-hover:text-primary-foreground transition-colors" />
                             </div>
                             <div className="flex-1">
                               <h4 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
@@ -206,8 +206,8 @@ function HomePage() {
                 <Link key={category._id} to={`/category/${category._id}`}>
                   <Card className="group bg-card border-2 border-muted hover:border-primary/50 transition-all duration-300 cursor-pointer h-full">
                     <CardHeader className="text-center pb-4">
-                      <div className="mx-auto w-24 h-24 bg-secondary rounded-full flex items-center justify-center mb-6 group-hover:bg-primary transition-colors duration-300">
-                        <IconComponent className="h-12 w-12 text-secondary-foreground group-hover:text-primary-foreground transition-colors" />
+                      <div className="mx-auto w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-6 group-hover:bg-primary transition-colors duration-300">
+                        <IconComponent className="h-12 w-12 text-foreground group-hover:text-primary-foreground transition-colors" />
                       </div>
                       <CardTitle className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors">
                         {category.name.toUpperCase()}
@@ -237,11 +237,11 @@ function HomePage() {
       </section>
 
       {/* Featured Products */}
-      <section className="py-20 bg-secondary">
+      <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-16">
             <div>
-              <h2 className="text-4xl font-bold text-secondary-foreground mb-4">
+              <h2 className="text-4xl font-bold text-foreground mb-4">
                 SẢN PHẨM NỔI BẬT
               </h2>
               <p className="text-xl text-muted-foreground">
@@ -341,13 +341,13 @@ function HomePage() {
       </section>
 
       {/* Newsletter Section - Style chuyentactical */}
-      <section className="py-20 bg-secondary text-secondary-foreground">
+      <section className="py-20 bg-muted/50">
         <div className="container mx-auto px-4">
-          <Card className="bg-gradient-to-r from-secondary to-secondary/95 border-primary/20 border-2 max-w-4xl mx-auto">
+          <Card className="bg-gradient-to-r from-card to-muted/30 border-primary/20 border-2 max-w-4xl mx-auto">
             <CardContent className="pt-12 text-center">
               <div className="mb-8">
                 <Mail className="h-16 w-16 text-primary mx-auto mb-6" />
-                <h2 className="text-4xl font-bold text-secondary-foreground mb-4">
+                <h2 className="text-4xl font-bold text-foreground mb-4">
                   ĐĂNG KÝ NHẬN TIN
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">

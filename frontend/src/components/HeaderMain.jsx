@@ -144,7 +144,7 @@ function HeaderMain() {
       </div>
 
       {/* Navigation */}
-      <nav className="bg-secondary">
+      <nav className="bg-primary">
         <div className="container mx-auto px-4">
           <div className={`${isMenuOpen ? "block" : "hidden"} md:block`}>
             <ul className="flex flex-col md:flex-row md:items-center md:space-x-8 py-4 md:py-2">
@@ -154,8 +154,8 @@ function HeaderMain() {
                   to="/"
                   className={`flex items-center gap-2 py-2 md:py-1 px-3 md:px-0 font-medium transition-colors ${
                     isActiveLink("/")
-                      ? "text-primary bg-primary/10 md:bg-transparent border-b-2 border-primary"
-                      : "text-secondary-foreground hover:text-primary"
+                      ? "text-accent bg-accent/10 md:bg-transparent border-b-2 border-accent"
+                      : "text-primary-foreground hover:text-accent"
                   }`}
                 >
                   Trang chủ
@@ -168,8 +168,8 @@ function HeaderMain() {
                   to="/categories"
                   className={`flex items-center gap-2 py-2 md:py-1 px-3 md:px-0 font-medium transition-colors ${
                     isActiveLink("/categories")
-                      ? "text-primary bg-primary/10 md:bg-transparent border-b-2 border-primary"
-                      : "text-secondary-foreground hover:text-primary"
+                      ? "text-accent bg-accent/10 md:bg-transparent border-b-2 border-accent"
+                      : "text-primary-foreground hover:text-accent"
                   }`}
                 >
                   <Grid3X3 className="h-4 w-4" />
@@ -183,8 +183,8 @@ function HeaderMain() {
                   to="/products"
                   className={`flex items-center gap-2 py-2 md:py-1 px-3 md:px-0 font-medium transition-colors ${
                     isActiveLink("/products")
-                      ? "text-primary bg-primary/10 md:bg-transparent border-b-2 border-primary"
-                      : "text-secondary-foreground hover:text-primary"
+                      ? "text-accent bg-accent/10 md:bg-transparent border-b-2 border-accent"
+                      : "text-primary-foreground hover:text-accent"
                   }`}
                 >
                   <Package className="h-4 w-4" />
@@ -204,8 +204,8 @@ function HeaderMain() {
                         to={categoryPath}
                         className={`flex items-center gap-2 py-2 md:py-1 px-3 md:px-0 font-medium transition-colors ${
                           isActiveLink(categoryPath)
-                            ? "text-primary bg-primary/10 md:bg-transparent border-b-2 border-primary"
-                            : "text-secondary-foreground hover:text-primary"
+                            ? "text-accent bg-accent/10 md:bg-transparent border-b-2 border-accent"
+                            : "text-primary-foreground hover:text-accent"
                         }`}
                       >
                         <IconComponent className="h-4 w-4" />
@@ -235,8 +235,8 @@ function HeaderMain() {
                   to="/about"
                   className={`block py-2 md:py-1 px-3 md:px-0 font-medium transition-colors ${
                     isActiveLink("/about")
-                      ? "text-primary bg-primary/10 md:bg-transparent border-b-2 border-primary"
-                      : "text-secondary-foreground hover:text-primary"
+                      ? "text-accent bg-accent/10 md:bg-transparent border-b-2 border-accent"
+                      : "text-primary-foreground hover:text-accent"
                   }`}
                 >
                   Giới thiệu
@@ -247,8 +247,8 @@ function HeaderMain() {
                   to="/contact"
                   className={`block py-2 md:py-1 px-3 md:px-0 font-medium transition-colors ${
                     isActiveLink("/contact")
-                      ? "text-primary bg-primary/10 md:bg-transparent border-b-2 border-primary"
-                      : "text-secondary-foreground hover:text-primary"
+                      ? "text-accent bg-accent/10 md:bg-transparent border-b-2 border-accent"
+                      : "text-primary-foreground hover:text-accent"
                   }`}
                 >
                   Liên hệ

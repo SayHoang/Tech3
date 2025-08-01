@@ -7,7 +7,6 @@ import { User } from "./models/index.js";
 import { Review } from "./models/index.js";
 import mongoose from "mongoose";
 
-
 const values = {
   ASC: 1,
   DESC: -1,
@@ -15,15 +14,15 @@ const values = {
 
 function buildOptions(choices, columns) {
   const options = {};
-  choices.forEach((option) => { // ID_ASC
-    const [left, right] = option.split('_');
+  choices.forEach((option) => {
+    // ID_ASC
+    const [left, right] = option.split("_");
     const key = columns[left];
     const value = values[right];
     options[key] = value;
   });
   return options;
 }
-
 
 const db = {
   // categories
@@ -38,12 +37,17 @@ const db = {
 
       const options = buildOptions(orderBy, columns);
 
-      const totalCount = await Category.find(query).sort(options).countDocuments();
+      const totalCount = await Category.find(query)
+        .sort(options)
+        .countDocuments();
       if (offset >= totalCount) {
         offset = 0;
       }
 
-      const items = await Category.find(query).sort(options).skip(offset).limit(first);
+      const items = await Category.find(query)
+        .sort(options)
+        .skip(offset)
+        .limit(first);
       return {
         items: items,
         totalCount: totalCount,
@@ -60,7 +64,11 @@ const db = {
       return item;
     },
     updateById: async (id, { name }) => {
-      const updated = await Category.findByIdAndUpdate(id, { name }, { new: true });
+      const updated = await Category.findByIdAndUpdate(
+        id,
+        { name },
+        { new: true }
+      );
       if (updated != null) {
         return await Category.findById(id);
       }
@@ -83,7 +91,23 @@ const db = {
         }
 
         if (condition.price) {
-          query.price = { $gte: condition.price.min, $lte: condition.price.max };
+          query.price = {};
+          if (condition.price.min !== undefined) {
+            query.price.$gte = condition.price.min;
+          }
+          if (condition.price.max !== undefined) {
+            query.price.$lte = condition.price.max;
+          }
+        }
+
+        if (condition.categoryId) {
+          query.categoryId = new mongoose.Types.ObjectId(condition.categoryId);
+        }
+
+        if (condition.manufacturerId) {
+          query.manufacturerId = new mongoose.Types.ObjectId(
+            condition.manufacturerId
+          );
         }
       }
 
@@ -95,12 +119,17 @@ const db = {
 
       const options = buildOptions(orderBy, columns);
 
-      const totalCount = await Product.find(query).sort(options).countDocuments();
+      const totalCount = await Product.find(query)
+        .sort(options)
+        .countDocuments();
       if (offset >= totalCount) {
         offset = 0;
       }
 
-      const items = await Product.find(query).sort(options).skip(offset).limit(first);
+      const items = await Product.find(query)
+        .sort(options)
+        .skip(offset)
+        .limit(first);
 
       return {
         items: items,
@@ -126,7 +155,11 @@ const db = {
       return item;
     },
     updateById: async (id, { name, price, categoryId, manufacturerId }) => {
-      const updated = await Product.findByIdAndUpdate(id, { name, price, categoryId, manufacturerId }, { new: true });
+      const updated = await Product.findByIdAndUpdate(
+        id,
+        { name, price, categoryId, manufacturerId },
+        { new: true }
+      );
       if (updated != null) {
         return await Product.findById(id);
       }
@@ -140,9 +173,25 @@ const db = {
 
   // manufacturers
   manufacturers: {
-    getAll: async () => {
-      const items = await Manufacturer.find();
-      return items;
+    getAll: async ({ first = 100, offset = 0, orderBy = [] } = {}) => {
+      const query = {};
+
+      const columns = {
+        ID: "_id",
+        NAME: "name",
+      };
+
+      const options = buildOptions(orderBy, columns);
+      const totalCount = await Manufacturer.find(query).countDocuments();
+      const items = await Manufacturer.find(query)
+        .sort(options)
+        .skip(offset)
+        .limit(first);
+
+      return {
+        items: items,
+        totalCount: totalCount,
+      };
     },
     create: async ({ name }) => {
       const created = await Manufacturer.create({
@@ -155,7 +204,11 @@ const db = {
       return item;
     },
     updateById: async (id, { name }) => {
-      const updated = await Manufacturer.findByIdAndUpdate(id, { name }, { new: true });
+      const updated = await Manufacturer.findByIdAndUpdate(
+        id,
+        { name },
+        { new: true }
+      );
       if (updated != null) {
         return await Manufacturer.findById(id);
       }
@@ -188,7 +241,11 @@ const db = {
       return item;
     },
     updateById: async (id, { name, orderId, productId, quantity, price }) => {
-      const updated = await Detail.findByIdAndUpdate(id, { name, orderId, productId, quantity, price }, { new: true });
+      const updated = await Detail.findByIdAndUpdate(
+        id,
+        { name, orderId, productId, quantity, price },
+        { new: true }
+      );
       if (updated != null) {
         return await Detail.findById(id);
       }
@@ -219,7 +276,11 @@ const db = {
       return item;
     },
     updateById: async (id, { customerId, orderDate, totalAmount }) => {
-      const updated = await Order.findByIdAndUpdate(id, { customerId, orderDate, totalAmount }, { new: true });
+      const updated = await Order.findByIdAndUpdate(
+        id,
+        { customerId, orderDate, totalAmount },
+        { new: true }
+      );
       if (updated != null) {
         return await Order.findById(id);
       }
@@ -234,15 +295,27 @@ const db = {
   // reviews
   reviews: {
     findByProductIdCustomerId: async (productId, customerId) => {
-      const review = await Review.findByProductIdCustomerId(productId, customerId);
+      const review = await Review.findByProductIdCustomerId(
+        productId,
+        customerId
+      );
       return review;
     },
     create: async ({ customerId, productId, rating, comment }) => {
-      const created = await Review.create({ customerId, productId, rating, comment });
+      const created = await Review.create({
+        customerId,
+        productId,
+        rating,
+        comment,
+      });
       return created;
     },
     updateById: async (id, { customerId, productId, rating, comment }) => {
-      const updated = await Review.findByIdAndUpdate(id, { customerId, productId, rating, comment }, { new: true });
+      const updated = await Review.findByIdAndUpdate(
+        id,
+        { customerId, productId, rating, comment },
+        { new: true }
+      );
       if (updated != null) {
         return await Review.findById(id);
       }

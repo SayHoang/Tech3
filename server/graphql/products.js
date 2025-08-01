@@ -41,6 +41,8 @@ export const typeDef = `
     input ProductConnectionInput {
         name: String
         price: RangeConditionInput
+        categoryId: ID
+        manufacturerId: ID
     }
 
 
