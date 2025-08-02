@@ -48,6 +48,7 @@ import {
   GET_ALL_MANUFACTURERS,
   DELETE_PRODUCT,
 } from "../../graphql/admin/products.js";
+import { getImageUrl } from "../../lib/imageUtils.js";
 
 function ProductList() {
   const navigate = useNavigate();
@@ -319,7 +320,10 @@ function ProductList() {
                     <TableRow key={product._id}>
                       <TableCell>
                         <img
-                          src={product.imageUrl || "/placeholder-product.png"}
+                          src={
+                            getImageUrl(product.imageUrl) ||
+                            "/placeholder-product.png"
+                          }
                           alt={product.name}
                           className="h-12 w-12 object-cover rounded-md border"
                         />

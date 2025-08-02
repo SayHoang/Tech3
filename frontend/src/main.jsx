@@ -6,13 +6,22 @@ import {
   ApolloProvider,
   ApolloClient,
   InMemoryCache,
-  createHttpLink,
+  // createHttpLink,
   from,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 
-// HTTP link
-const httpLink = createHttpLink({
+// // HTTP link
+// const httpLink = createHttpLink({
+//   uri: "http://localhost:4000/",
+//   fetchOptions: {
+//     mode: "cors",
+//   },
+// });
+
+// Upload link for file uploads
+const uploadLink = createUploadLink({
   uri: "http://localhost:4000/",
   fetchOptions: {
     mode: "cors",
@@ -32,7 +41,8 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const client = new ApolloClient({
-  link: from([authLink, httpLink]),
+  // link: from([authLink, httpLink]),
+  link: from([authLink, uploadLink]),
   cache: new InMemoryCache(),
 });
 

@@ -143,12 +143,13 @@ const db = {
       const items = await Product.find(query);
       return items;
     },
-    create: async ({ name, price, categoryId, manufacturerId }) => {
+    create: async ({ name, price, categoryId, manufacturerId, imageUrl }) => {
       const created = await Product.create({
         name: name,
         price: price,
         categoryId: categoryId,
         manufacturerId: manufacturerId,
+        imageUrl: imageUrl,
       });
       return created;
     },
@@ -156,10 +157,13 @@ const db = {
       const item = await Product.findById(id);
       return item;
     },
-    updateById: async (id, { name, price, categoryId, manufacturerId }) => {
+    updateById: async (
+      id,
+      { name, price, categoryId, manufacturerId, imageUrl }
+    ) => {
       const updated = await Product.findByIdAndUpdate(
         id,
-        { name, price, categoryId, manufacturerId },
+        { name, price, categoryId, manufacturerId, imageUrl },
         { new: true }
       );
       if (updated != null) {

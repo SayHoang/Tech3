@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useWishlist } from "../hooks/useWishlist";
 import { useAuth } from "../context/AuthContext";
+import { getImageUrl } from "../lib/imageUtils.js";
 
 function Wishlist() {
   const { isAuthenticated } = useAuth();
@@ -218,7 +219,7 @@ function Wishlist() {
                   {/* Product Image */}
                   <div className="flex-shrink-0">
                     <img
-                      src={item.product.imageUrl || "/placeholder-product.jpg"}
+                      src={getImageUrl(item.product.imageUrl)}
                       alt={item.product.name}
                       className="w-20 h-20 object-cover rounded-lg border"
                     />

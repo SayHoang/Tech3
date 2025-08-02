@@ -28,6 +28,8 @@ import {
   CREATE_PRODUCT,
   UPDATE_PRODUCT,
 } from "../../graphql/admin/products.js";
+import { UPLOAD_FILE } from "../../graphql/upload.js";
+import { getServerUrl } from "../../lib/imageUtils.js";
 
 function ProductForm() {
   const navigate = useNavigate();
@@ -44,6 +46,8 @@ function ProductForm() {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   // GraphQL queries
   const { data: categoriesData, loading: categoriesLoading } = useQuery(
@@ -103,6 +107,30 @@ function ProductForm() {
       console.error("Update error:", error);
       alert("Có lỗi xảy ra khi cập nhật sản phẩm!");
       setIsSubmitting(false);
+    },
+  });
+
+  // Upload file mutation
+  const [uploadFile] = useMutation(UPLOAD_FILE, {
+    onCompleted: (data) => {
+      console.log("Upload completed successfully:", data);
+      const uploadedFileName = data.upload;
+      const imageUrl = `${getServerUrl()}/img/${uploadedFileName}`;
+      setFormData((prev) => ({ ...prev, imageUrl }));
+      setSelectedFile(null);
+      setIsUploading(false);
+      // Clear file input
+      const fileInput = document.getElementById("file-input");
+      if (fileInput) fileInput.value = "";
+      alert("Upload hình ảnh thành công!");
+    },
+    onError: (error) => {
+      console.error("Upload error details:", error);
+      console.error("Error message:", error.message);
+      console.error("Error graphQL errors:", error.graphQLErrors);
+      console.error("Error network error:", error.networkError);
+      alert(`Có lỗi xảy ra khi upload hình ảnh: ${error.message}`);
+      setIsUploading(false);
     },
   });
 
@@ -179,9 +207,57 @@ function ProductForm() {
     }
   };
 
-  // Handle image upload (simplified - just URL input)
+  // Handle image URL change
   const handleImageUrlChange = (e) => {
     handleInputChange("imageUrl", e.target.value);
+  };
+
+  // Handle file selection
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/gif",
+      ];
+      if (!allowedTypes.includes(file.type)) {
+        alert("Chỉ chấp nhận file hình ảnh (JPG, PNG, GIF)!");
+        return;
+      }
+
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        alert("File không được lớn hơn 10MB!");
+        return;
+      }
+
+      setSelectedFile(file);
+    }
+  };
+
+  // Handle file upload
+  const handleFileUpload = async () => {
+    if (!selectedFile) {
+      alert("Vui lòng chọn file hình ảnh!");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      await uploadFile({ variables: { file: selectedFile } });
+    } catch (error) {
+      console.error("Upload failed:", error);
+      setIsUploading(false);
+    }
+  };
+
+  // Clear selected file
+  const clearSelectedFile = () => {
+    setSelectedFile(null);
+    document.getElementById("file-input").value = "";
   };
 
   const categories = categoriesData?.categories?.nodes || [];
@@ -369,6 +445,54 @@ function ProductForm() {
                 <CardTitle>Hình ảnh sản phẩm</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* File Upload Section */}
+                <div className="space-y-2">
+                  <Label htmlFor="file-input">Upload hình ảnh</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="file-input"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      onClick={handleFileUpload}
+                      disabled={!selectedFile || isUploading}
+                      className="bg-orange-500 hover:bg-orange-600"
+                    >
+                      {isUploading ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      ) : (
+                        <Upload className="h-4 w-4 mr-2" />
+                      )}
+                      {isUploading ? "Đang upload..." : "Upload"}
+                    </Button>
+                    {selectedFile && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={clearSelectedFile}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  {selectedFile && (
+                    <p className="text-sm text-gray-600">
+                      File được chọn: {selectedFile.name}
+                    </p>
+                  )}
+                </div>
+
+                {/* Divider */}
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 border-t"></div>
+                  <span className="text-sm text-gray-500">hoặc</span>
+                  <div className="flex-1 border-t"></div>
+                </div>
+
                 {/* Image URL Input */}
                 <div className="space-y-2">
                   <Label htmlFor="imageUrl">URL Hình ảnh</Label>
@@ -399,8 +523,8 @@ function ProductForm() {
                 )}
 
                 <p className="text-sm text-gray-500">
-                  Nhập URL của hình ảnh sản phẩm. Hình ảnh sẽ được hiển thị với
-                  tỷ lệ 1:1.
+                  Upload file hình ảnh hoặc nhập URL. Hình ảnh sẽ được hiển thị
+                  với tỷ lệ 1:1. File hỗ trợ: JPG, PNG, GIF (tối đa 5MB).
                 </p>
               </CardContent>
             </Card>

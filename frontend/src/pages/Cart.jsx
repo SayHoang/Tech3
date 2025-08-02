@@ -1,5 +1,6 @@
 import React from "react";
 import { useCart } from "../hooks/useCart";
+import { getImageUrl } from "../lib/imageUtils.js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -161,7 +162,7 @@ function Cart() {
                   {/* Product Image */}
                   <div className="flex-shrink-0">
                     <img
-                      src={item.productImageUrl || "/placeholder-product.png"}
+                      src={getImageUrl(item.productImageUrl)}
                       alt={item.productName}
                       className="h-20 w-20 object-cover rounded-md border"
                     />

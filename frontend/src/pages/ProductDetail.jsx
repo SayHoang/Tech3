@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import ProductCard from "../components/ProductCard.jsx";
 import AddToCartButton from "../components/AddToCartButton.jsx";
 import WishlistButton from "../components/WishlistButton.jsx";
+import { getImageUrl } from "../lib/imageUtils.js";
 import {
   Star,
   ShoppingCart,
@@ -64,7 +65,7 @@ function ProductDetail() {
 
   // Mock data for features not in GraphQL yet
   const mockImages = [
-    product?.imageUrl || "/api/placeholder/600/600",
+    getImageUrl(product?.imageUrl),
     "/api/placeholder/600/600",
     "/api/placeholder/600/600",
   ];
@@ -559,10 +560,7 @@ function ProductDetail() {
                         <Link to={`/product/${relatedProduct._id}`}>
                           <div className="flex gap-3">
                             <img
-                              src={
-                                relatedProduct.imageUrl ||
-                                "/api/placeholder/80/80"
-                              }
+                              src={getImageUrl(relatedProduct.imageUrl)}
                               alt={relatedProduct.name}
                               className="w-16 h-16 object-cover rounded"
                             />

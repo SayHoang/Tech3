@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Star, Heart, Eye, Package } from "lucide-react";
 import AddToCartButton from "./AddToCartButton.jsx";
+import { getImageUrl } from "../lib/imageUtils.js";
 
 function ProductCard({ product, viewMode = "grid" }) {
   const { _id, name, price, imageUrl, categoryName, manufacturerName } =
@@ -48,7 +49,7 @@ function ProductCard({ product, viewMode = "grid" }) {
         <div className="w-64 flex-shrink-0 bg-gradient-to-br from-secondary/5 to-primary/5 overflow-hidden relative">
           {imageUrl ? (
             <img
-              src={imageUrl}
+              src={getImageUrl(imageUrl)}
               alt={name}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
@@ -130,7 +131,7 @@ function ProductCard({ product, viewMode = "grid" }) {
       <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-secondary/5 to-primary/5">
         {imageUrl ? (
           <img
-            src={imageUrl}
+            src={getImageUrl(imageUrl)}
             alt={name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           />

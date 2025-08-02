@@ -19,6 +19,7 @@ import Cart from "./pages/Cart";
 import Wishlist from "./pages/Wishlist";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import TestUpload from "./pages/TestUpload";
 import NoPage from "./pages/NoPage";
 
 // Admin Page Components
@@ -50,6 +51,7 @@ function App() {
             <Route path="products/new" element={<ProductForm />} />
             <Route path="products/edit/:id" element={<ProductForm />} />
             <Route path="analytics" element={<Analytics />} />
+            <Route path="upload" element={<TestUpload />} />
             {/* Future admin routes */}
             <Route
               path="orders"
