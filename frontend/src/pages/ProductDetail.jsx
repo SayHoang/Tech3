@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import ProductCard from "../components/ProductCard.jsx";
 import AddToCartButton from "../components/AddToCartButton.jsx";
+import WishlistButton from "../components/WishlistButton.jsx";
 import {
   Star,
   ShoppingCart,
@@ -438,6 +439,7 @@ function ProductDetail() {
                     Hết hàng
                   </Button>
                 )}
+                <WishlistButton productId={product._id} />
                 <Button size="lg" variant="outline">
                   Mua ngay
                 </Button>

@@ -16,6 +16,7 @@ import Category from "./pages/Category";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
+import Wishlist from "./pages/Wishlist";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NoPage from "./pages/NoPage";
@@ -89,6 +90,14 @@ function App() {
                       element={
                         <RequireAuth>
                           <Cart />
+                        </RequireAuth>
+                      }
+                    />
+                    <Route
+                      path="/wishlist"
+                      element={
+                        <RequireAuth>
+                          <Wishlist />
                         </RequireAuth>
                       }
                     />

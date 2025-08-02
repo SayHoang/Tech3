@@ -6,6 +6,7 @@ import { Order } from "./models/index.js";
 import { User } from "./models/index.js";
 import { Review } from "./models/index.js";
 import { Cart } from "./models/index.js";
+import { Wishlist } from "./models/index.js";
 import mongoose from "mongoose";
 
 const values = {
@@ -428,6 +429,91 @@ const db = {
     deleteCart: async (userId) => {
       const userObjectId = new mongoose.Types.ObjectId(userId);
       return await Cart.findOneAndDelete({ userId: userObjectId });
+    },
+  },
+
+  // wishlists
+  wishlists: {
+    findByUserId: async (userId) => {
+      return await Wishlist.findOne({
+        userId: new mongoose.Types.ObjectId(userId),
+      }).populate({
+        path: "items.productId",
+        model: "product",
+      });
+    },
+    create: async (wishlistData) => {
+      return await Wishlist.create(wishlistData);
+    },
+    addItem: async (userId, productId) => {
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+      const productObjectId = new mongoose.Types.ObjectId(productId);
+
+      // Find existing wishlist or create new one
+      let wishlist = await Wishlist.findOne({ userId: userObjectId });
+
+      if (!wishlist) {
+        wishlist = new Wishlist({
+          userId: userObjectId,
+          items: [],
+        });
+      }
+
+      // Check if item already exists in wishlist
+      const existingItem = wishlist.items.find(
+        (wishlistItem) =>
+          wishlistItem.productId.toString() === productObjectId.toString()
+      );
+
+      if (existingItem) {
+        throw new Error("Product already in wishlist");
+      }
+
+      // Add new item
+      wishlist.items.push({
+        productId: productObjectId,
+        addedAt: new Date(),
+      });
+
+      const saved = await wishlist.save();
+      return await Wishlist.findById(saved._id).populate({
+        path: "items.productId",
+        model: "product",
+      });
+    },
+    removeItem: async (userId, productId) => {
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+      const productObjectId = new mongoose.Types.ObjectId(productId);
+
+      const updated = await Wishlist.findOneAndUpdate(
+        { userId: userObjectId },
+        { $pull: { items: { productId: productObjectId } } },
+        { new: true }
+      );
+
+      return await Wishlist.findById(updated._id).populate({
+        path: "items.productId",
+        model: "product",
+      });
+    },
+    clearWishlist: async (userId) => {
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+      return await Wishlist.findOneAndUpdate(
+        { userId: userObjectId },
+        { $set: { items: [] } },
+        { new: true }
+      );
+    },
+    isProductInWishlist: async (userId, productId) => {
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+      const productObjectId = new mongoose.Types.ObjectId(productId);
+
+      const wishlist = await Wishlist.findOne({ userId: userObjectId });
+      if (!wishlist) return false;
+
+      return wishlist.items.some(
+        (item) => item.productId.toString() === productObjectId.toString()
+      );
     },
   },
 };

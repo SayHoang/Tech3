@@ -32,6 +32,10 @@ import {
   typeDef as analytics,
   resolvers as analyticsResolvers,
 } from "./analytics.js";
+import {
+  typeDef as wishlist,
+  resolvers as wishlistResolvers,
+} from "./wishlist.js";
 
 const query = `
   scalar DateTime
@@ -113,6 +117,7 @@ const typeDefs = [
   authentication,
   cart,
   analytics,
+  wishlist,
 ];
 
 const resolvers = _.merge(
@@ -126,7 +131,8 @@ const resolvers = _.merge(
   uploadResolvers,
   authenticationResolvers,
   cartResolvers,
-  analyticsResolvers
+  analyticsResolvers,
+  wishlistResolvers
 );
 
 export const schema = createSchema({

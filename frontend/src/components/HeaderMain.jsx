@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { GET_ALL_CATEGORIES } from "../graphql/categories.js";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../hooks/useCart.js";
+import { useWishlist } from "../hooks/useWishlist.js";
 import {
   Search,
   ShoppingCart,
@@ -44,6 +45,7 @@ function HeaderMain() {
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
   const { cartItemCount } = useCart();
+  const { wishlistCount } = useWishlist();
 
   // Fetch categories for navigation
   const { data: categoriesData, loading: categoriesLoading } = useQuery(
@@ -116,10 +118,24 @@ function HeaderMain() {
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="relative">
-              <Heart className="h-5 w-5" />
-            </Button>
-
+            <Link to="/wishlist">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative"
+                title="Danh sách yêu thích"
+              >
+                <Heart className="h-5 w-5" />
+                {wishlistCount > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                  >
+                    {wishlistCount}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
             <Link to="/cart">
               <Button
                 variant="ghost"
