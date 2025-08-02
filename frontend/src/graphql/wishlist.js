@@ -133,3 +133,29 @@ export const MOVE_WISHLIST_TO_CART = gql`
     }
   }
 `;
+
+// Mutation to reorder wishlist items
+export const REORDER_WISHLIST = gql`
+  mutation ReorderWishlist($productIds: [ID!]!) {
+    reorderWishlist(productIds: $productIds) {
+      _id
+      userId
+      itemCount
+      items {
+        _id
+        productId
+        addedAt
+        product {
+          _id
+          name
+          price
+          imageUrl
+          categoryId
+          categoryName
+          manufacturerId
+          manufacturerName
+        }
+      }
+    }
+  }
+`;

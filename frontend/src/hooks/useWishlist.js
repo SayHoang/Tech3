@@ -6,6 +6,7 @@ import {
   REMOVE_FROM_WISHLIST,
   CLEAR_WISHLIST,
   MOVE_WISHLIST_TO_CART,
+  REORDER_WISHLIST,
 } from "../graphql/wishlist.js";
 import { GET_CART, GET_CART_ITEM_COUNT } from "../graphql/cart.js";
 
@@ -106,6 +107,21 @@ export function useWishlist() {
     }
   );
 
+  // Reorder wishlist mutation
+  const [reorderWishlist, { loading: reorderLoading }] = useMutation(
+    REORDER_WISHLIST,
+    {
+      update(cache, { data }) {
+        if (data?.reorderWishlist) {
+          cache.writeQuery({
+            query: GET_WISHLIST,
+            data: { wishlist: data.reorderWishlist },
+          });
+        }
+      },
+    }
+  );
+
   // Check if product is in wishlist
   const checkWishlistStatus = (productId) => {
     if (!isAuthenticated || !productId || !wishlistData?.wishlist) {
@@ -183,6 +199,16 @@ export function useWishlist() {
     }
   };
 
+  // Handle reorder wishlist
+  const handleReorderWishlist = async (productIds) => {
+    try {
+      await reorderWishlist({ variables: { productIds } });
+    } catch (error) {
+      console.error("Reorder wishlist error:", error);
+      alert("Có lỗi xảy ra khi sắp xếp lại danh sách yêu thích!");
+    }
+  };
+
   return {
     // Data
     wishlist: wishlistData?.wishlist,
@@ -195,6 +221,7 @@ export function useWishlist() {
     removeLoading,
     clearLoading,
     moveLoading,
+    reorderLoading,
 
     // Error
     wishlistError,
@@ -205,6 +232,7 @@ export function useWishlist() {
     handleRemoveFromWishlist,
     handleClearWishlist,
     handleMoveToCart,
+    handleReorderWishlist,
     refetchWishlist,
   };
 }

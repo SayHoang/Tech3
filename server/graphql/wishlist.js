@@ -25,6 +25,7 @@ export const typeDef = `
     removeFromWishlist(productId: ID!): Wishlist!
     clearWishlist: Wishlist!
     moveWishlistToCart(productId: ID!): Cart!
+    reorderWishlist(productIds: [ID!]!): Wishlist!
   }
 `;
 
@@ -258,6 +259,57 @@ export const resolvers = {
         await context.db.wishlists.removeItem(user._id, productId);
 
         return cart;
+      } catch (error) {
+        if (error.message.includes("Token") || error.message.includes("jwt")) {
+          throw new Error("Token không hợp lệ");
+        }
+        throw error;
+      }
+    },
+
+    reorderWishlist: async (parent, { productIds }, context, info) => {
+      const token = context.headers.authorization?.split(" ")[1];
+      if (!token) {
+        throw new Error("Bạn cần đăng nhập để sắp xếp lại danh sách yêu thích");
+      }
+
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const username = decoded.username;
+
+        const user = await context.db.users.findOne(username);
+        if (!user) {
+          throw new Error("Người dùng không tồn tại");
+        }
+
+        // Get current wishlist
+        let wishlist = await context.db.wishlists.findByUserId(user._id);
+        if (!wishlist) {
+          throw new Error("Wishlist not found");
+        }
+
+        // Reorder items based on productIds array
+        const reorderedItems = [];
+        for (const productId of productIds) {
+          const item = wishlist.items.find(
+            (item) => item.productId._id.toString() === productId
+          );
+          if (item) {
+            reorderedItems.push(item);
+          }
+        }
+
+        return {
+          _id: wishlist._id,
+          userId: wishlist.userId,
+          items: reorderedItems.map((item) => ({
+            _id: item._id,
+            productId: item.productId._id,
+            product: item.productId,
+            addedAt: item.addedAt,
+          })),
+          itemCount: reorderedItems.length,
+        };
       } catch (error) {
         if (error.message.includes("Token") || error.message.includes("jwt")) {
           throw new Error("Token không hợp lệ");
