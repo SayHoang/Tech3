@@ -1,3 +1,4 @@
+import { useQuery } from "@apollo/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -8,34 +9,21 @@ import {
   TrendingUp,
   Eye,
   Plus,
+  Calendar,
+  DollarSign,
+  AlertTriangle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { GET_DASHBOARD_OVERVIEW } from "../../graphql/admin/analytics.js";
 
 function Dashboard() {
-  // Mock data - in real app, these would come from GraphQL queries
-  const stats = {
-    totalProducts: 45,
-    totalOrders: 128,
-    totalCustomers: 89,
-    todayRevenue: 15750000,
-  };
+  // Fetch dashboard data
+  const { data, loading, error } = useQuery(GET_DASHBOARD_OVERVIEW, {
+    errorPolicy: "all",
+  });
 
-  const recentProducts = [
-    {
-      id: 1,
-      name: "5.11 Tactical TPT EDC",
-      price: 1200000,
-      category: "Pliers",
-    },
-    {
-      id: 2,
-      name: "Leatherman Surge Heavy Duty",
-      price: 3600000,
-      category: "Pliers",
-    },
-    { id: 3, name: "Outdoor Tactical Tent", price: 2500000, category: "Tent" },
-  ];
+  const dashboardData = data?.dashboardOverview;
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -43,6 +31,50 @@ function Dashboard() {
       currency: "VND",
     }).format(amount);
   };
+
+  // Format date for recent orders
+  const formatDate = (dateStr) => {
+    return new Date(dateStr).toLocaleString("vi-VN");
+  };
+
+  // Get status badge color
+  const getStatusBadgeColor = (status) => {
+    switch (status) {
+      case "completed":
+        return "bg-green-100 text-green-800";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <div className="flex justify-center items-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2 text-red-600">
+              <AlertTriangle className="h-5 w-5" />
+              <span>Có lỗi xảy ra khi tải dashboard: {error.message}</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -58,34 +90,18 @@ function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tổng Sản phẩm</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalProducts}</div>
-            <p className="text-xs text-muted-foreground">+2 từ tuần trước</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Đơn hàng</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Đơn hàng hôm nay
+            </CardTitle>
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalOrders}</div>
-            <p className="text-xs text-muted-foreground">+12% từ tháng trước</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Khách hàng</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalCustomers}</div>
-            <p className="text-xs text-muted-foreground">+5 khách hàng mới</p>
+            <div className="text-2xl font-bold">
+              {dashboardData?.orderStats?.today || 0}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Tuần này: {dashboardData?.orderStats?.thisWeek || 0}
+            </p>
           </CardContent>
         </Card>
 
@@ -94,50 +110,154 @@ function Dashboard() {
             <CardTitle className="text-sm font-medium">
               Doanh thu hôm nay
             </CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              {formatCurrency(dashboardData?.revenueStats?.today || 0)}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Tháng này:{" "}
+              {formatCurrency(dashboardData?.revenueStats?.thisMonth || 0)}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Khách hàng mới
+            </CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {formatCurrency(stats.todayRevenue)}
+              {dashboardData?.customerStats?.newCustomersToday || 0}
             </div>
-            <p className="text-xs text-muted-foreground">+8% so với hôm qua</p>
+            <p className="text-xs text-muted-foreground">
+              Tổng: {dashboardData?.customerStats?.totalCustomers || 0} khách
+              hàng
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Đơn hàng tháng này
+            </CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-600">
+              {dashboardData?.orderStats?.thisMonth || 0}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Năm này: {dashboardData?.orderStats?.thisYear || 0}
+            </p>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Products */}
+        {/* Recent Orders */}
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Sản phẩm gần đây</CardTitle>
+              <CardTitle>Đơn hàng gần đây</CardTitle>
               <Button variant="outline" size="sm" asChild>
-                <Link to="/admin/products">
+                <Link to="/admin/analytics">
                   <Eye className="h-4 w-4 mr-2" />
-                  Xem tất cả
+                  Xem chi tiết
                 </Link>
               </Button>
             </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentProducts.map((product) => (
+              {dashboardData?.recentOrders?.map((order) => (
                 <div
-                  key={product.id}
+                  key={order._id}
                   className="flex items-center justify-between"
                 >
                   <div>
-                    <p className="font-medium">{product.name}</p>
+                    <p className="font-medium">#{order._id.slice(-6)}</p>
                     <p className="text-sm text-gray-600">
-                      <Badge variant="outline" className="text-xs">
-                        {product.category}
+                      <Badge
+                        variant="outline"
+                        className={`text-xs ${getStatusBadgeColor(
+                          order.status
+                        )}`}
+                      >
+                        {order.status}
                       </Badge>
+                      <span className="ml-2">{order.itemCount} sản phẩm</span>
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium text-orange-600">
-                      {formatCurrency(product.price)}
+                    <p className="font-medium text-green-600">
+                      {formatCurrency(order.totalAmount)}
                     </p>
+                    <p className="text-xs text-gray-500">
+                      {formatDate(order.createdAt)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Revenue Chart (7 days) */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              Doanh thu 7 ngày qua
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {dashboardData?.dailyRevenue?.map((day) => (
+                <div
+                  key={day.date}
+                  className="flex justify-between items-center"
+                >
+                  <div>
+                    <div className="font-medium">
+                      {new Date(day.date).toLocaleDateString("vi-VN", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {day.orderCount} đơn
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-medium text-green-600">
+                      {formatCurrency(day.revenue)}
+                    </div>
+                    <div
+                      className="h-2 bg-green-200 rounded-full mt-1"
+                      style={{ width: "60px" }}
+                    >
+                      <div
+                        className="h-2 bg-green-500 rounded-full"
+                        style={{
+                          width: `${Math.min(
+                            (day.revenue /
+                              Math.max(
+                                ...(dashboardData?.dailyRevenue?.map(
+                                  (d) => d.revenue
+                                ) || [1])
+                              )) *
+                              100,
+                            100
+                          )}%`,
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               ))}
@@ -175,6 +295,22 @@ function Dashboard() {
                     <div className="font-medium">Quản lý Sản phẩm</div>
                     <div className="text-sm text-gray-600">
                       Xem và chỉnh sửa sản phẩm
+                    </div>
+                  </div>
+                </Link>
+              </Button>
+
+              <Button
+                variant="outline"
+                asChild
+                className="justify-start h-auto p-4"
+              >
+                <Link to="/admin/analytics">
+                  <TrendingUp className="h-5 w-5 mr-3" />
+                  <div className="text-left">
+                    <div className="font-medium">Báo cáo & Phân tích</div>
+                    <div className="text-sm text-gray-600">
+                      Xem báo cáo doanh thu chi tiết
                     </div>
                   </div>
                 </Link>

@@ -28,6 +28,10 @@ import {
   typeDef as authentication,
   resolvers as authenticationResolvers,
 } from "./authentication.js";
+import {
+  typeDef as analytics,
+  resolvers as analyticsResolvers,
+} from "./analytics.js";
 
 const query = `
   scalar DateTime
@@ -108,6 +112,7 @@ const typeDefs = [
   upload,
   authentication,
   cart,
+  analytics,
 ];
 
 const resolvers = _.merge(
@@ -120,7 +125,8 @@ const resolvers = _.merge(
   ordersResolvers,
   uploadResolvers,
   authenticationResolvers,
-  cartResolvers
+  cartResolvers,
+  analyticsResolvers
 );
 
 export const schema = createSchema({

@@ -14,6 +14,7 @@ import {
   LogOut,
   ChevronDown,
   ChevronRight,
+  TrendingUp,
 } from "lucide-react";
 
 function AdminLayout() {
@@ -44,6 +45,12 @@ function AdminLayout() {
           current: location.pathname === "/admin/products/new",
         },
       ],
+    },
+    {
+      name: "Báo cáo",
+      href: "/admin/analytics",
+      icon: TrendingUp,
+      current: location.pathname.startsWith("/admin/analytics"),
     },
     {
       name: "Đơn hàng",

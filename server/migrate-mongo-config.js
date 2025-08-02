@@ -1,12 +1,12 @@
 // In this file you can configure migrate-mongo
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
+import { fileURLToPath } from "url";
+import { dirname, resolve } from "path";
 import dotenv from "dotenv";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-dotenv.config({ path: resolve(__dirname, "../.env") }); 
+dotenv.config({ path: resolve(__dirname, "../.env") });
 
 const config = {
   mongodb: {
@@ -26,7 +26,7 @@ const config = {
   // The value in seconds for the TTL index that will be used for the lock. Value of 0 will disable the feature.
   lockTtl: 0,
 
-  // The file extension to create migrations and search for in migration dir 
+  // The file extension to create migrations and search for in migration dir
   migrationFileExtension: ".js",
 
   // Enable the algorithm to create a checksum of the file contents and use that in the comparison to determine
@@ -34,7 +34,7 @@ const config = {
   useFileHash: false,
 
   // Don't change this, unless you know what you're doing
-  moduleSystem: 'commonjs',
+  moduleSystem: "commonjs",
 };
 
 export default config;

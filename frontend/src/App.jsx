@@ -24,6 +24,7 @@ import NoPage from "./pages/NoPage";
 import Dashboard from "./pages/admin/Dashboard";
 import ProductList from "./pages/admin/ProductList";
 import ProductForm from "./pages/admin/ProductForm";
+import Analytics from "./pages/admin/Analytics";
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
             <Route path="products" element={<ProductList />} />
             <Route path="products/new" element={<ProductForm />} />
             <Route path="products/edit/:id" element={<ProductForm />} />
+            <Route path="analytics" element={<Analytics />} />
             {/* Future admin routes */}
             <Route
               path="orders"

@@ -34,13 +34,11 @@ function Footer() {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <MapPin className="h-5 w-5 text-orange-400" />
-                <span className="text-sm">
-                  273/5 Nguyễn Trọng Tuyển, P.10, Phú Nhuận, TP.HCM
-                </span>
+                <span className="text-sm">123, Thủ Đức, TP.HCM</span>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-orange-400" />
-                <span className="text-sm">094 336 79 39</span>
+                <span className="text-sm">0909 090 909</span>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-orange-400" />

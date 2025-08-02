@@ -51,6 +51,8 @@ const folderStructure = `
         graphql/
         pages/
             admin/
-            customer/
+        context/
         App.jsx
+        main.jsx
+        App.css
 `;
